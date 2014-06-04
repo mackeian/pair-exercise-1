@@ -5,10 +5,22 @@ var Calculator = (
       add: function (numberString) {
         var numberParts,
           numberPartsInt = [],
-          sum = 0;
+          sum = 0,
+          separators = '\n,',
+          separatorsRegExp = '';
 
         if (numberString === "") return 0;
-        numberParts = numberString.split(",");
+        var lengthOfPrefix = 2;
+        if (numberString.substr(lengthOfPrefix) === "//") {
+          var indexOfLineBreak = numberString.indexOf('\n');
+          var separator = numberString.substring(lengthOfPrefix, indexOfLineBreak);
+          separators += separator;
+        }
+
+
+
+        separatorsRegExp = new RegExp(separators, 'g');
+        numberParts = numberString.split(separatorsRegExp);
         for (var i = numberParts.length - 1; i >= 0; i--) {
           numberPartsInt[i] = parseInt(numberParts[i], 10);
           sum += numberPartsInt[i];
@@ -37,6 +49,9 @@ var Calculator = (
         });
         it('should handle new line and comma as separator', function() {
           Calculator.add("1\n2,3").should.equal(6);
+        });
+        it('should handle custom separators', function() {
+          Calculator.add("//;\n1\n2,3;10").should.equal(16);
         });
     });
 })();
